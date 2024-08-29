@@ -302,4 +302,4 @@ rm -f ./*stackdump*
 let erro=0
 
 # chmod +x testar_sintatico.sh
-# ./testar_sintatico.sh 
+# ./testar_sintatico.sh
