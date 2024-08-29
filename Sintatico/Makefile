@@ -5,6 +5,7 @@ CC=gcc
 PROGRAMA = sintatico
 LEXICO = lexico.l
 SINTATICO = sintatico.y
+ZIP_NAME = sintatico
 
 $(PROGRAMA): $(LEXICO) $(SINTATICO)
 	$(BISON) -d $(SINTATICO)
@@ -18,4 +19,11 @@ clean:
 	rm -f *.tab.h
 	rm -f *.o
 	rm -f *.exe
-	rm -f sintatico
+	rm -f $(PROGRAMA)
+
+zip:
+	zip $(ZIP_NAME).zip $(LEXICO) $(SINTATICO) Makefile
+
+finish: all run clean create_zip
+
+.PHONY: all clean run create_zip
