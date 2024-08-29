@@ -1,0 +1,214 @@
+#include "LISTA_6_EXERCICIO_1.h"
+
+int main() {
+    char reads[SIGMA] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                         'h', 'e', 'r', 's', 'i', 'c', 'a', 't', '+', '-'};
+    int edges[][SIGMA] = {
+        {19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 2, 0, 0, 4, 0, 11, 0, 0, 17, 18},  // estado 1
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 7, 0, 0, 0, 0, 0},               // estado 2
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0},               // estado 3
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0},               // estado 4
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0},               // estado 5
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},               // estado 6
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0},               // estado 7
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},               // estado 8
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0},              // estado 9
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},               // estado 10
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0},              // estado 11
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 13, 0, 0},             // estado 12
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0},              // estado 13
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0},              // estado 14
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},               // estado 15
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},               // estado 16
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},               // estado 17
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},               // estado 18
+        {19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0},    // estado 19
+        {22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 0, 0, 0, 0, 0, 0, 0, 0, 21, 21},   // estado 20
+        {22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},     // estado 21
+        {22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},     // estado 22
+    };
+
+    int finalStates[] = {3, 6, 8, 10, 13, 14, 15, 16, 17, 18, 19, 22};
+    char *tokens[] = {"nda", "nda", "ELE", "nda", "nda", "ELA", "nda", "DELE", "nda", "DELA",
+                      "nda", "nda", "GATO", "CARRO", "GATOS", "CARROS", "MAIS", "MENOS", "INTEIRO", "nda", "nda", "REAL"};
+
+    bool textBefore = false;
+    char input[4096];
+    char output[4096];
+    int outputIndex = 0;
+    int printIndex = 0;
+    while (fgets(input, 4096, stdin) != NULL) {
+        int currentState = 1;         // estado inicial
+        int index = 0;                // índice do char na entrada
+        int backupIndex = 0;          // índice para lidar com estados não terminais
+        bool acceptedAsFinal = true;  // se o estado atual é um estado final
+        int end = -1;                 // estado final
+
+        while (input[index] != '\0') {
+            int currentCharIndex = getChar(reads, input[index]);  // obtém o índice do char no array
+
+            // bloco especial apenas para tratar casos em que o char lido não está no alfabeto
+            if (currentCharIndex == -1) {
+                if (end == -1) {
+                    if (index == 0) {
+                        if (input[index] == 10 || input[index] == 32) {
+                            resetVariables(&index, (index + 1), &backupIndex, &end, &currentState);
+                            continue;
+                        }
+                        printToken(&textBefore, "ERRO");
+                        resetVariables(&index, (index + 1), &backupIndex, &end, &currentState);
+                        continue;
+                    }
+
+                    resetVariables(&index, (backupIndex + 1), &backupIndex, &end, &currentState);
+                    if (input[index - 1] == 10 || input[index - 1] == 32) continue;
+                    printToken(&textBefore, "ERRO");
+                    clearOutput(output, strlen(output), &outputIndex);
+                    continue;
+                }
+
+                if (end != currentState) {  // o caractere atual não está no alfabeto e o estado atual não é um estado final
+                    index = backupIndex;
+                    backupIndex = index;
+                }
+
+                if (end != -1) {  // se o estado final não for -1, o token é impresso porque em algum momento ele foi para o estado final
+                    printf("%s", tokens[end - 1]);
+                    if (end == 22 || end == 19) {  // print numbers
+                        printSession(output, printIndex);
+                    }
+                    textBefore = true;
+                }
+
+                // atualizar variáveis ​​para começar de novo
+                clearOutput(output, strlen(output), &outputIndex);
+                resetVariables(&index, (index + 1), &backupIndex, &end, &currentState);
+                if (input[index - 1] == 10 || input[index - 1] == 32) continue;  // pulando espaços e novas linhas
+                printToken(&textBefore, "ERRO");
+                continue;
+            }
+
+            // se o caractere estiver no alfabeto, o próximo estado é calculado
+            int nextState = edges[currentState - 1][currentCharIndex];
+
+            // se a transição não for válida
+            if (nextState == 0) {
+                if (end == -1) {  // a transição não existe e nenhum estado no token é final
+                    printToken(&textBefore, "ERRO");
+                    clearOutput(output, strlen(output), &outputIndex);
+                    resetVariables(&index, (backupIndex + 1), &backupIndex, &end, &currentState);
+                    continue;
+                }
+
+                if (end != -1) {  // a transição não existe e existe um estado final, fim do token
+                    printf("%s", tokens[end - 1]);
+                    backupIndex = index;
+                }
+                if (currentState == end) {  // se o estado atual for um estado final, significa que o token é válido
+                    if (end == 22 || end == 19) {
+                        printSession(output, printIndex);
+                    }
+                } else {  // transição inválida, o estado atual não é final, é necessário voltar ao último estado final
+                    index = backupIndex - 1;
+                    backupIndex = index;
+                }
+                clearOutput(output, strlen(output), &outputIndex);
+                textBefore = true;
+                end = -1;
+                currentState = 1;
+                continue;
+            }
+
+            // a transição é válida
+            currentState = nextState;                              // atualiza o estado atual
+            acceptedAsFinal = isFinal(finalStates, currentState);  // checa se o estado atual é um estado final
+
+            // se o estado atual for um estado final, o estado final será atualizado
+            if (acceptedAsFinal) {
+                end = currentState;
+                printIndex = outputIndex + 1;
+            }
+
+            if (input[index] != 10 && input[index] != 32) {  // pulando espaços e novas linhas
+                if (textBefore) {
+                    printf("\n");
+                    textBefore = false;
+                }
+                output[outputIndex] = input[index];
+                outputIndex++;
+            }
+            index++;
+
+            // chegar a um estado final depois de sair de um estado intermediário não final não atualizará o backupIndex
+            // a intenção é salvar o índice do que foi o estado final antes de ir para o não final
+            if (acceptedAsFinal) {
+                backupIndex = index;
+            }
+        }
+
+        // Verifique a classificação do último token
+        if (end == currentState) {
+            backupIndex = index;
+            printf("%s", tokens[end - 1]);
+            if (end == 22 || end == 19) {
+                printSession(output, printIndex);
+            }
+            textBefore = true;
+
+        } else {  // este é o último token da linha e seu erro
+            if (input[backupIndex] == 10 || input[backupIndex] == 32 || input[backupIndex] == 0) continue;
+            printToken(&textBefore, "ERRO");
+            resetVariables(&index, (backupIndex + 1), &backupIndex, &end, &currentState);
+        }
+        clearOutput(output, strlen(output), &outputIndex);
+    }
+    printf("\n");
+    return 0;
+}
+
+int getChar(char *reads, char input) {
+    for (int i = 0; i < SIGMA; i++) {
+        if (reads[i] == input) {
+            return i;
+        }
+    }
+    return -1;  // erro
+}
+
+bool isFinal(int *finals, int current) {
+    for (int i = 0; i < QNTD_FINAL; i++) {
+        if (finals[i] == current) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void printToken(bool *textBefore, char *toPrint) {
+    if (*textBefore) {
+        printf("\n");
+    }
+    printf("%s", toPrint);
+    *textBefore = true;
+}
+
+void printSession(char *output, int size) {
+    printf(" ");
+    for (int i = 0; i < size; i++) {
+        printf("%c", output[i]);  // imprime os caracteres que foram lidos
+    }
+}
+
+void clearOutput(char *output, int size, int *outputIndex) {
+    for (int i = 0; i < size; i++) {
+        output[i] = '\0';  // limpa o buffer de saída
+    }
+    *outputIndex = 0;
+}
+
+void resetVariables(int *index, int indexToSet, int *backupIndex, int *end, int *currentState) {
+    *index = indexToSet;
+    *backupIndex = *index;
+    *end = -1;
+    *currentState = 1;
+}
