@@ -2,8 +2,7 @@
 %{
 	#include <string.h>
 	#include <sintatico.tab.h>
-	int linha = 1;
-	int coluna = 1;
+	int linha = 1, coluna = 1;
 
 void warning(){
 	for(int i = 0; i < strlen(yytext); i++){
@@ -83,15 +82,15 @@ void warning(){
 "?"     {coluna += 1; return TERNARY_CONDITIONAL; }
 "->"    {coluna += 2; return POINTER; }
 
-[_a-zA-Z][_a-zA-Z0-9]* {if(strlen(yytext)>255){return IDENTIFIER_TOO_LONG;}else{coluna += strlen(yytext);return IDENTIFIER; }}
+[_a-zA-Z][_a-zA-Z0-9]* {if(strlen(yytext)>255) {return IDENTIFIER_TOO_LONG;} else {coluna += strlen(yytext);return IDENTIFIER;}}
 
-"0"[1-7][0-7]* {coluna += strlen(yytext);return NUM_OCTAL; }
+"0"[1-7][0-7]* {coluna += strlen(yytext); return NUM_OCTAL;}
 
-[0-9]+ { coluna += strlen(yytext);return NUM_INTEGER;}
+[0-9]+ {coluna += strlen(yytext); return NUM_INTEGER;}
 
-0[xX][0-9a-fA-F]+ {coluna += strlen(yytext);return NUM_HEXA; }
+0[xX][0-9a-fA-F]+ {coluna += strlen(yytext); return NUM_HEXA;}
 
-["]([^"\\\n]|\\.|\\\n)*["] {coluna += strlen(yytext);return STRING;}
+["]([^"\\\n]|\\.|\\\n)*["] {coluna += strlen(yytext); return STRING;}
 
 "\'""\\"?."\'" {coluna += strlen(yytext); return CHARACTER;}
 
@@ -103,12 +102,12 @@ void warning(){
 
 ("/*"([^*]|[\n]|("*"+([^*/]|[\n])))*"*/") {warning();}
 
-("/*"([^*]|[\n]|("*"+([^*/]|[\n])))*)	{return  UNTERMINATED_COMMENT;}
+("/*"([^*]|[\n]|("*"+([^*/]|[\n])))*)	{return UNTERMINATED_COMMENT;}
 
 [\n] {linha += 1; coluna = 1;}
 
 <<EOF>> {return END_OF_FILE;}
 
-. { coluna += strlen(yytext); return OTHER;}
+. {coluna += strlen(yytext); return OTHER;}
 
 %%
