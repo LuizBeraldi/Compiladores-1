@@ -21,7 +21,6 @@ int getNo(Lista *l);
 int getLinha(Lista *l);
 int getColuna(Lista *l);
 char *getConteudoToken(Lista *l);
-void imprimirLista(Lista *l);
 void freeLista(Lista *l);
 
 #endif
