@@ -14,7 +14,7 @@ void warning(){
 		}
 
 		if(yytext[i] == '/' && i < (strlen(yytext)-1) && i > 0){
-			if(yytext[i+1] == '*' && yytext[i+2] != '/')	{
+			if(yytext[i+1] == '*' && yytext[i+2] != '/'){
 				printf("warning:%d:%d: \'/*\' within block comment\n", linha, coluna-1);
 			}
 		}	
