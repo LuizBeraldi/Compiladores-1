@@ -1,4 +1,5 @@
 %{
+//O CODIGO NÃO FUNCIONA
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>  // Para funções matemáticas como sin, cos, etc.

@@ -1,4 +1,5 @@
 %{
+//O CODIGO NÃO FUNCIONA
 #include "sintatico.tab.h"
 
 unsigned columnCounter = 1;
