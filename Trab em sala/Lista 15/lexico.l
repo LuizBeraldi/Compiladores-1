@@ -6,9 +6,7 @@
 #include <sintatico.tab.h>
 extern YYSTYPE yylval;
 
-int myEof = 0;
-int textBefore = 0;
-int yycolumn = 1;
+int myEof = 0, textoAntes = 0, yycolumn = 1;
 
 void addToUnion() {
     yylval.token.valor = strdup(yytext);
@@ -32,7 +30,9 @@ void addToUnion() {
 [a-z]+ { addToUnion(); yycolumn += strlen(yytext); return ID; }
 
 . { 
-    if (textBefore) printf("\n");
+    if (textoAntes){
+        printf("\n");
+    }
     printf("error:lexical:%d:%d: %s", yylineno, yycolumn, yytext);
     yycolumn += strlen(yytext);
     exit(1);

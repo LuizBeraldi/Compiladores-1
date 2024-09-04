@@ -9,19 +9,14 @@
 extern int yylex();
 void yyerror(void *s);
 
-extern int yychar;
-extern int textBefore;
-extern int myEof;
+extern int yychar, textoAntes, myEof;
 
-int erroAux = 0;
-int semanticError = 0;
-
-int currentType;
+int erroAux = 0, erroSemantico = 0, currentType;
 
 typedef struct node {
-    int key;
+    int chave;
     char *value;
-    struct node *next;
+    struct node *prox;
 } HashNode;
 
 int hash();
@@ -81,68 +76,79 @@ void yyerror(void *s) {}
 
 int hash() {
     int hash = 0;
-    for (int i = 0; i < strlen(yylval.token.valor); i++)
+    for(int i = 0; i < strlen(yylval.token.valor); i++){
         hash += yylval.token.valor[i];
+    }
     return hash % HASH_SIZE;
 }
 
 void insertHash() {
     int index = hash(yylval.token.valor);
     HashNode *aux = calloc(1, sizeof(HashNode));
-    aux->key = currentType;
+    aux->chave = currentType;
     aux->value = calloc(strlen(yylval.token.valor) + 1, sizeof(char));
     strcpy(aux->value, yylval.token.valor);
 
-    HashNode *head = (HashNode *) myHashTable[index];
-    if (!head) {
+    HashNode *inicio = (HashNode *) myHashTable[index];
+    if(!inicio){
         myHashTable[index] = aux;
-    } else {
-        while (head->next) 
-            head = head->next;
-        head->next = aux;
+    }else{
+        while(inicio->prox){
+            inicio = inicio->prox;
+        }
+        inicio->prox = aux;
     }
 
 }
 
-int lookForValueInHash() {
-    if (!myHashTable) return 0;
+int lookForValueInHash(){
+    if(!myHashTable){
+        return 0;
+    }
     int index = hash(yylval.token.valor);
     int ocorrencias = 0;
-    HashNode *head = (HashNode *) myHashTable[index];
+    HashNode *inicio = (HashNode *) myHashTable[index];
 
-    while (head) {
-        if (!strcmp(yylval.token.valor, head->value)) { // existe outro daquele identificador na hash
+    while(inicio){
+        if(!strcmp(yylval.token.valor, inicio->value)){
             ocorrencias++;
-            if (ocorrencias == 1) continue;  // se for o primeiro, continua 
-            if (currentType == head->key) {  // se for do mesmo tipo
-                if (textBefore) printf("\n");
+            if(ocorrencias == 1){
+                continue;
+            }
+            if(currentType == inicio->chave){
+                if (textoAntes){
+                    printf("\n");
+                }
                 printf("%d: identifier '%s' already declared", yylval.token.line, yylval.token.valor);
-                semanticError = 1;
-                textBefore = 1;
+                erroSemantico = 1;
+                textoAntes = 1;
                 return 1;
 
-            } else {  // se for de tipo diferente
-                if (textBefore) printf("\n");
+            }else{
+                if (textoAntes){
+                    printf("\n");
+                }
                 printf("%d: redefinition of identifier '%s'", yylval.token.line, yylval.token.valor);
-                semanticError = 1;
-                textBefore = 1;
+                erroSemantico = 1;
+                textoAntes = 1;
                 return 1;
             }
         }
-        head = head->next;
+        inicio = inicio->prox;
     }
     return 0;
 }
 
 void freeHash() {
-    for (int i = 0; i < HASH_SIZE; i++) {
-        HashNode *head = myHashTable[i];
-        while (head) {
-            HashNode *aux = head->next;
-            if (head->value) 
-                free(head->value);
-            free(head);
-            head = aux;
+    for(int i = 0; i < HASH_SIZE; i++){
+        HashNode *inicio = myHashTable[i];
+        while(inicio){
+            HashNode *aux = inicio->prox;
+            if(inicio->value){
+                free(inicio->value);
+            }
+            free(inicio);
+            inicio = aux;
         }
         myHashTable[i] = NULL; 
     }
@@ -150,21 +156,26 @@ void freeHash() {
 
 int main(int argc, char *argv[]) {
     myHashTable = calloc(HASH_SIZE, sizeof(HashNode));
-    while (!myEof) {
+    while(!myEof){
         yyparse();
 
-        if (yychar == 0) break;
-        if (semanticError == 0) {
-            if (textBefore) printf("\n");
+        if(yychar == 0){
+            break;
+        }
+
+        if(erroSemantico == 0){
+            if(textoAntes){
+                printf("\n");
+            }
             printf("%d: All Identifiers on Hash.", yylval.token.line);
-            textBefore = 1;
+            textoAntes = 1;
             freeHash();
-        } else {
-            semanticError = 0;
+        }else{
+            erroSemantico = 0;
             freeHash();
         }        
     }
-    if (myHashTable) {
+    if(myHashTable){
         freeHash(myHashTable);
         free(myHashTable);
     }
