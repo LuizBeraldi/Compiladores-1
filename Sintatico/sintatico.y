@@ -14,10 +14,10 @@ void imprimirLinha(FILE* input, int n){
 	fseek(input, 0, SEEK_SET);
 	while(i < n){
 		c = fgetc(input);
-		if(c == EOF){
-            break;
-        }else if(c == '\n'){
+		if(c == '\n'){
             i++;
+        }else if(c == EOF){
+            break;
         }
 	}
 	c = fgetc(input);
