@@ -59,13 +59,11 @@ T: INT { currentType = INT; }
     | CHAR { currentType = CHAR; }
     | FLOAT { currentType = FLOAT; } ;
 
-I: ID { 
-    // printf(">> %d %s\n\n", currentType, yylval.token.valor);
+I: ID {
     if (!lookForValueInHash())
         insertHash(); 
 }
-    | I COMMA ID { 
-        // printf("-> %d %s\n\n", currentType, yylval.token.valor);
+    | I COMMA ID {
         if (!lookForValueInHash())
             insertHash(); 
 } ;
