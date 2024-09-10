@@ -392,7 +392,6 @@ void stringIncompleta(void *cadeia, int *tokenGlobal, bool *textoAntes, bool cou
 void switchTokens(char *text, int token){
     switch (token) {
         case -1:
-            // strcat(text, "");
             break;
         case PLUS:
             strcat(text, " +");
