@@ -1,8 +1,7 @@
 %{
-//O CODIGO NÃO FUNCIONA
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>  // Para funções matemáticas como sin, cos, etc.
+#include <math.h>
 void yyerror(const char *s);
 int yylex(void);
 %}
@@ -29,7 +28,6 @@ int yylex(void);
 %%
 
 input:
-    /* vazio */
     | input linha
     ;
 
@@ -52,7 +50,7 @@ expr:
     | ABS ABREPARENTESE expr FECHAPARENTESE { $$ = abs($3); }
     | NUMINT          { $$ = $1; }
     | NUMREAL         { $$ = $1; }
-    | VARIAVEL        { $$ = 0; } // Variáveis podem ser usadas, mas sem valor definido
+    | VARIAVEL        { $$ = 0; }
     ;
 
 %%
