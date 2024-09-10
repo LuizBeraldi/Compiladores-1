@@ -1,5 +1,4 @@
 %{
-//O CODIGO NÃO FUNCIONA
 #include "sintatico.tab.h"
 
 unsigned columnCounter = 1;
@@ -23,7 +22,7 @@ unsigned columnCounter = 1;
 [0-9]+              { columnCounter += strlen(yytext);yylval.inteiro = atoi(yytext); return NUMINT; }
 [0-9]*"."[0-9]+     { columnCounter += strlen(yytext);yylval.real = atof(yytext); return NUMREAL; }
 [a-zA-Z_][a-zA-Z0-9_]* { columnCounter += strlen(yytext);yylval.var = strdup(yytext); return VARIAVEL; }
-.                   { columnCounter++; //printf("Erro de sintaxe na coluna [%d]: %c\n", columnCounter, yytext[0]); wrongChars[wrongCharsCount] = yytext[0];
+.                   { columnCounter++;
 wrongCharsCount++; lexicalError = true; }
 
 %%
